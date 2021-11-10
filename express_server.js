@@ -39,13 +39,15 @@ function generateRandomString() {
 //
 // Show all urls page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  let { user_id } = req.cookies;
+  const templateVars = { urls: urlDatabase, user_id: users[user_id] };
   res.render("urls_index", templateVars);
 });
 //
 // New URL pair page
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] }
+  let { user_id } = req.cookies;
+  const templateVars = { user_id: users[user_id] }
   res.render("urls_new", templateVars);
 });
 //
@@ -58,7 +60,8 @@ app.post("/urls", (req, res) => {
 //
 // Newly created / Edit URL page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  let { user_id } = req.cookies;
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user_id: users[user_id] };
   res.render("urls_show", templateVars);
 });
 //
@@ -82,19 +85,20 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 //
 // Login request
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  // Verify username
   res.redirect("/urls");
 });
 //
 // Logout request
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 //
 // Registration Page
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  let { user_id } = req.cookies;
+  const templateVars = { user_id: users[user_id] };
   res.render("urls_register", templateVars);
 });
 //
