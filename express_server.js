@@ -35,6 +35,16 @@ function generateRandomString() {
    }
   return result;
 }
+//
+// Function to check email in user database
+const checkUserExists = (inp_email) => {
+  for (let id in users) {
+    if (users[id]["email"] === inp_email) {
+      return true;
+    };
+  };
+  return false;
+}
 
 //
 // Show all urls page
@@ -106,6 +116,8 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString();
   const { email, password } = req.body;
+  if ((!email || !password)) return res.status(400).send('Bad Request');
+  if (checkUserExists(email)) return res.status(400).send('Bad Request');
   users[id] = { id, email, password };
   res.cookie("user_id", id);
   res.redirect("/urls");
