@@ -94,9 +94,10 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 //
 // Login request
-app.post("/login", (req, res) => {
-  // Verify username
-  res.redirect("/urls");
+app.get("/login", (req, res) => {
+  let { user_id } = req.cookies;
+  const templateVars = { user_id: users[user_id] };
+  res.render("urls_login", templateVars);
 });
 //
 // Logout request
@@ -116,8 +117,8 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString();
   const { email, password } = req.body;
-  if ((!email || !password)) return res.status(400).send('Bad Request');
-  if (checkUserExists(email)) return res.status(400).send('Bad Request');
+  if ((!email || !password)) return res.status(400).send('<img src="https://http.cat/400">');
+  if (checkUserExists(email)) return res.status(400).send('<img src="https://http.cat/400">');
   users[id] = { id, email, password };
   res.cookie("user_id", id);
   res.redirect("/urls");
