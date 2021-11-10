@@ -19,6 +19,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 //
+// Database for userID
+const users = {
+
+};
+//
 
 // Function generating new shortURL
 function generateRandomString() {
@@ -91,6 +96,15 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   const templateVars = { username: req.cookies["username"] };
   res.render("urls_register", templateVars);
+});
+//
+// New registration request
+app.post("/register", (req, res) => {
+  const id = generateRandomString();
+  const { email, password } = req.body;
+  users[id] = { id, email, password };
+  res.cookie("user_id", id);
+  res.redirect("/urls");
 });
 
 // Server Listening...
