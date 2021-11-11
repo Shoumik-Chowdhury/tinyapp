@@ -37,10 +37,10 @@ function generateRandomString() {
 }
 //
 // Function to check email in user database
-const checkUserExists = (inp_email) => {
+const checkUserIdExist = (data, type) => {
   for (let id in users) {
-    if (users[id]["email"] === inp_email) {
-      return true;
+    if (users[id][type] === data) {
+      return id;
     };
   };
   return false;
@@ -93,11 +93,25 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect("/urls");
 });
 //
-// Login request
+// Login Page
 app.get("/login", (req, res) => {
   let { user_id } = req.cookies;
   const templateVars = { user_id: users[user_id] };
   res.render("urls_login", templateVars);
+});
+//
+// Login request/verification
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  if (checkUserIdExist(email, "email")) {
+    if (checkUserIdExist(password, "password")) {
+      let id = checkUserIdExist(password, "password");
+      res.cookie("user_id", id);
+      return res.redirect("/urls");
+    }
+    return res.status(403).send('<img src="https://http.cat/403">');
+  }
+  return res.status(403).send('<img src="https://http.cat/403">');
 });
 //
 // Logout request
@@ -118,7 +132,7 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const { email, password } = req.body;
   if ((!email || !password)) return res.status(400).send('<img src="https://http.cat/400">');
-  if (checkUserExists(email)) return res.status(400).send('<img src="https://http.cat/400">');
+  if (checkUserIdExist(email, "email")) return res.status(400).send('<img src="https://http.cat/400">');
   users[id] = { id, email, password };
   res.cookie("user_id", id);
   res.redirect("/urls");
