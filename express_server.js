@@ -58,11 +58,14 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let { user_id } = req.cookies;
   const templateVars = { user_id: users[user_id] }
+  if (!user_id) return res.redirect("/login");
   res.render("urls_new", templateVars);
 });
 //
 // Create request for new URL pair
 app.post("/urls", (req, res) => {
+  let { user_id } = req.cookies;
+  if (!user_id) return res.redirect("/login");
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
@@ -97,6 +100,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 app.get("/login", (req, res) => {
   let { user_id } = req.cookies;
   const templateVars = { user_id: users[user_id] };
+  if (user_id) return res.redirect("/urls");
   res.render("urls_login", templateVars);
 });
 //
@@ -124,6 +128,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   let { user_id } = req.cookies;
   const templateVars = { user_id: users[user_id] };
+  if (user_id) return res.redirect("/urls");
   res.render("urls_register", templateVars);
 });
 //
