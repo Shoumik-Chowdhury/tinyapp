@@ -51,12 +51,23 @@ const checkUserIdExist = (data, type) => {
   };
   return false;
 }
+//
+// Function to return URL matching userID
+const urlsForUser = (id) => {
+  let userUrlsDatabase = {};
+  for (let key in urlDatabase) {
+    if (urlDatabase[key]["user_id"] === id) {
+      userUrlsDatabase[key] = { longURL: urlDatabase[key]["longURL"], user_id: id }
+    }
+  }
+  return userUrlsDatabase;
+}
 
 //
 // Show all urls page
-app.get("/urls", (req, res) => {
+app.get("/urls", (req, res) => {  
   let { user_id } = req.cookies;
-  const templateVars = { urls: urlDatabase, user_id: users[user_id] };
+  const templateVars = { urls: urlsForUser(user_id), user_id: users[user_id] };
   res.render("urls_index", templateVars);
 });
 //
@@ -75,30 +86,40 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {};
   urlDatabase[shortURL]["longURL"] = req.body.longURL;
+  urlDatabase[shortURL]["user_id"] = user_id;
   res.redirect(`/urls/${shortURL}`);
 });
 //
 // Newly created / Edit URL page
 app.get("/urls/:shortURL", (req, res) => {
+  if (!urlDatabase[req.params.shortURL]) return res.status(404).send('<img src="https://http.cat/404">');
   let { user_id } = req.cookies;
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user_id: users[user_id] };
+  if(!urlsForUser(user_id)[req.params.shortURL]) return res.status(401).send('<img src="https://http.cat/401">');
   res.render("urls_show", templateVars);
 });
 //
 // Redirection to longURL corresponding to shortURL
 app.get("/u/:shortURL", (req, res) => {
+  if (!urlDatabase[req.params.shortURL]) return res.status(404).send('<img src="https://http.cat/404">');
   const longURL = urlDatabase[req.params.shortURL]["longURL"];
   res.redirect(longURL);
 });
 //
 // Delete request for a URL pair
 app.post("/urls/:shortURL/delete", (req, res) => {
+  if (!urlDatabase[req.params.shortURL]) return res.status(404).send('<img src="https://http.cat/404">');
+  let { user_id } = req.cookies;
+  if(!urlsForUser(user_id)[req.params.shortURL]) return res.status(401).send('<img src="https://http.cat/401">');
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 //
 // Edit request for a longURL
 app.post("/urls/:shortURL/edit", (req, res) => {
+  if (!urlDatabase[req.params.shortURL]) return res.status(404).send('<img src="https://http.cat/404">');
+  let { user_id } = req.cookies;
+  if(!urlsForUser(user_id)[req.params.shortURL]) return res.status(401).send('<img src="https://http.cat/401">');
   urlDatabase[req.params.shortURL]["longURL"] = req.body.editURL;
   res.redirect("/urls");
 });
