@@ -3,6 +3,9 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 
+const { urlDatabase, users } = require('./database');
+const { generateRandomString, checkUserIdExist, urlsForUser } = require('./helper_function');
+
 // Server config
 const app = express();
 const PORT = 8080; // default port 8080
@@ -16,60 +19,6 @@ app.use(cookieSession({
   keys: ['john', 'cena']
 }))
 //
-
-// Database storing shortURL-longURL pairs
-const urlDatabase = {
-  "b2xVn2": { 
-    longURL: "http://www.lighthouselabs.ca",
-    user_id: ""
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    user_id: ""
-  }
-};
-//
-// Database for userID
-const users = {
-  admin: {
-    id: "admin",
-    email: "admin@tiny",
-    password: "1234"
-  }
-};
-//
-
-// Function generating new shortURL
-function generateRandomString() {
-  let result           = '';
-  let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let charactersLength = characters.length;
-  for ( let i = 0; i < 6; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
-  return result;
-}
-//
-// Function to check email in user database
-const checkUserIdExist = (data, type) => {
-  for (let id in users) {
-    if (users[id][type] === data) {
-      return id;
-    };
-  };
-  return false;
-}
-//
-// Function to return URL matching userID
-const urlsForUser = (id) => {
-  let userUrlsDatabase = {};
-  for (let key in urlDatabase) {
-    if (urlDatabase[key]["user_id"] === id) {
-      userUrlsDatabase[key] = { longURL: urlDatabase[key]["longURL"], user_id: id }
-    }
-  }
-  return userUrlsDatabase;
-}
 
 //
 // Show all urls page
