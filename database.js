@@ -1,12 +1,12 @@
 // Database storing shortURL-longURL pairs
 const urlDatabase = {
-  "b2xVn2": { 
+  "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
-    user_id: ""
+    userId: ""
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
-    user_id: ""
+    userId: ""
   }
 };
 //
@@ -19,4 +19,4 @@ const users = {
   }
 };
 //
-module.exports = { urlDatabase, users }
+module.exports = { urlDatabase, users };
