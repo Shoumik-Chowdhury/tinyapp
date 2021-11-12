@@ -1,4 +1,4 @@
-const { urlDatabase, users } = require('./database')
+//
 // Function generating new shortURL
 function generateRandomString() {
   let result           = '';
@@ -11,9 +11,9 @@ function generateRandomString() {
 }
 //
 // Function to check email in user database
-const checkUserIdExist = (data, type) => {
-  for (let id in users) {
-    if (users[id][type] === data) {
+const checkUserIdExist = (data, type, userDB) => {
+  for (let id in userDB) {
+    if (userDB[id][type] === data) {
       return id;
     };
   };
@@ -21,11 +21,11 @@ const checkUserIdExist = (data, type) => {
 }
 //
 // Function to return URL matching userID
-const urlsForUser = (id) => {
+const urlsForUser = (id, urlDB) => {
   let userUrlsDatabase = {};
-  for (let key in urlDatabase) {
-    if (urlDatabase[key]["user_id"] === id) {
-      userUrlsDatabase[key] = { longURL: urlDatabase[key]["longURL"], user_id: id }
+  for (let key in urlDB) {
+    if (urlDB[key]["user_id"] === id) {
+      userUrlsDatabase[key] = { longURL: urlDB[key]["longURL"], user_id: id }
     }
   }
   return userUrlsDatabase;
