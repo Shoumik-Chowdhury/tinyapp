@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 
 // Server config
 const app = express();
@@ -27,7 +28,11 @@ const urlDatabase = {
 //
 // Database for userID
 const users = {
-
+  admin: {
+    id: "admin",
+    email: "admin@tiny",
+    password: "1234"
+  }
 };
 //
 
@@ -136,8 +141,8 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (checkUserIdExist(email, "email")) {
-    if (checkUserIdExist(password, "password")) {
-      let id = checkUserIdExist(password, "password");
+    let id = checkUserIdExist(email, "email");
+    if (bcrypt.compareSync(password, users[id]["password"])) {
       res.cookie("user_id", id);
       return res.redirect("/urls");
     }
@@ -166,7 +171,8 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
   if ((!email || !password)) return res.status(400).send('<img src="https://http.cat/400">');
   if (checkUserIdExist(email, "email")) return res.status(400).send('<img src="https://http.cat/400">');
-  users[id] = { id, email, password };
+  const hashedPass = bcrypt.hashSync(password, 10);
+  users[id] = { id, email, password: hashedPass };
   res.cookie("user_id", id);
   res.redirect("/urls");
 });
