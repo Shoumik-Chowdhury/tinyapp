@@ -1,5 +1,5 @@
 //
-// Function generating new shortURL
+// Function generating new shortURL (6 characters)
 function generateRandomString() {
   let result           = '';
   let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -10,10 +10,12 @@ function generateRandomString() {
   return result;
 }
 //
-// Function to check email in user database
-const checkUserIdExist = (data, type, userDB) => {
+// Function to check email in user database.
+// input: function(email, users id object)
+// returns: user_id if exists or false
+const getUserByEmail = (email, userDB) => {
   for (let id in userDB) {
-    if (userDB[id][type] === data) {
+    if (userDB[id]["email"] === email) {
       return id;
     };
   };
@@ -21,6 +23,8 @@ const checkUserIdExist = (data, type, userDB) => {
 }
 //
 // Function to return URL matching userID
+// input: function(user_id, url data object)
+// returns: matching urls as object
 const urlsForUser = (id, urlDB) => {
   let userUrlsDatabase = {};
   for (let key in urlDB) {
@@ -31,4 +35,4 @@ const urlsForUser = (id, urlDB) => {
   return userUrlsDatabase;
 }
 
-module.exports = {generateRandomString, checkUserIdExist, urlsForUser}
+module.exports = {generateRandomString, getUserByEmail, urlsForUser}
